@@ -19,10 +19,10 @@ function fieldExtract($source, $target, $fields)
 {
     foreach ($fields as $prop)
     {
-        if (isset($source[$prop]))
-        {
-            $target->$prop = html_entity_decode($source[$prop]);
-        }
+    if (isset($source[$prop]))
+    {
+        $target->$prop = html_entity_decode($source[$prop]);
+    }
     }
 }
 
@@ -36,10 +36,10 @@ function fieldInject($source, $target, $fields)
 {
     foreach ($fields as $prop)
     {
-        if (isset($source->$prop))
-        {
-            $target[$prop] = $source->html_entity_decode($prop);
-        }
+    if (isset($source->$prop))
+    {
+        $target[$prop] = $source->html_entity_decode($prop);
+    }
     }
 }
 
@@ -63,20 +63,11 @@ function endsWith($string, $ending)
  * Assumption: that the URL helper has been loaded.
  * @param type $choices Array of name=>link pairs
  */
-function build_menu_bar($choices, $activeLink)
+function build_menu_bar($choices)
 {
-    $result = '<ul class="nav navbar-nav">';
+    $result = '<ul>';
     foreach ($choices as $name => $link)
-    {
-        if($activeLink !== $link)
-        {
-            $result .= '<li>' . anchor($link, $name) . '</li>';
-        }
-        else
-        {
-            $result .= '<li class="active">' . anchor($link, $name) . '</li>';
-        }
-    }
+    $result .= '<li>' . anchor($link, $name) . '</li>';
     $result .= '</ul>';
     return $result;
 }
