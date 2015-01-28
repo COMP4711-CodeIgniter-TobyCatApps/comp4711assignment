@@ -32,6 +32,11 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 {navbar}
+                <!--ul class="nav navbar-nav">
+                    <li class="active"><a href="http://getbootstrap.com/examples/starter-template/#">Home</a></li>
+                    <li><a href="http://getbootstrap.com/examples/starter-template/#about">About</a></li>
+                    <li><a href="http://getbootstrap.com/examples/starter-template/#contact">Contact</a></li>
+                </ul-->
             </div><!--/.nav-collapse -->
         </div>
     </nav>
