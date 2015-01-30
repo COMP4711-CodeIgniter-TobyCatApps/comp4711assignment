@@ -37,7 +37,7 @@
 				<div class="form-group">
 					<button type="button" class="btn">Upload Image</button>
 					<button type="submit" class="btn btn-default" value="Submit">Submit</button>
-					<a  type="button" class="btn btn-default" href="/create_ad/cancel">Done</a>
+					<a  type="button" class="btn btn-default" href="/">Cancel</a>
 				</div>
 			</form>
 		</div> <!-- form container -->
