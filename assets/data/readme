@@ -1,0 +1,4 @@
+SETUP INSTRUCTIONS
+==================
+1. make a database called comp4711assignment.
+2. import the tables and example data using the database.sql script.

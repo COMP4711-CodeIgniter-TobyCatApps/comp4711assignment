@@ -47,7 +47,7 @@ class Welcome extends Application {
         foreach ($categories as $category)
         {
             $list[] = anchor(
-                '', $category['name'], 'title="'.$category['name'].'"');
+                '', $category->name, 'title="'.$category->name.'"');
         }
 
         $attributes = array();

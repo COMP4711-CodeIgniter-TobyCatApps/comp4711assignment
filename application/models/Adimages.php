@@ -1,81 +1,32 @@
 <?php
 
-class Adimages extends CI_Model {
-
-    var $data = array(
-        array(
-            'ID'        => 1,
-            'imageID'   => 1,
-            'adID'      => 1),
-        array(
-            'ID'        => 1,
-            'imageID'   => 2,
-            'adID'      => 1),
-        array(
-            'ID'        => 1,
-            'imageID'   => 3,
-            'adID'      => 1),
-        array(
-            'ID'        => 1,
-            'imageID'   => 4,
-            'adID'      => 1),
-        array(
-            'ID'        => 2,
-            'imageID'   => 2,
-            'adID'      => 2),
-        array(
-            'ID'        => 3,
-            'imageID'   => 3,
-            'adID'      => 3),
-        array(
-            'ID'        => 4,
-            'imageID'   => 4,
-            'adID'      => 4),
-        array(
-            'ID'        => 5,
-            'imageID'   => 5,
-            'adID'      => 5),
-        array(
-            'ID'        => 6,
-            'imageID'   => 6,
-            'adID'      => 6)
-    );
-
+class Adimages extends MY_Model
+{
     // Constructor
-    public function __construct() {
-        parent::__construct();
+    public function __construct()
+    {
+        parent::__construct('Adimages','ID');
     }
 
     // retrieve a single row
-    public function getAdImageIDs($adID) {
-        // iterate over the data until we find the one we want
+    public function getAdImageIDs($adID)
+    {
+        // get the records from the database
+        $records = $this->some('adID',$adID);
+
+        // iterate over the records and extract their IDs
         $imageIDs = array();
-        foreach ($this->data as $record)
+        foreach ($records as $record)
         {
-            if ($record['adID'] == $adID)
-            {
-                $imageIDs[] = $record['imageID'];
-            }
+            $imageIDs[] = $record->imageID;
         }
         return $imageIDs;
     }
 
     // retrieve a single row
-    public function getAdImageID($adID) {
-        // iterate over the data until we find the one we want
-        foreach ($this->data as $record)
-        {
-            if ($record['adID'] == $adID)
-            {
-                return $record['imageID'];
-            }
-        }
-        return null;
+    public function getAdImageID($adID)
+    {
+        $some = $this->some('adID',$adID);
+        return (count($some) > 0) ? $some[0]->imageID : null;
     }
-
-    // retrieve all rows
-    public function all() {
-        return $this->data;
-    }
-
 }

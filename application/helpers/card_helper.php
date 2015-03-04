@@ -14,15 +14,15 @@ function adToCard($CI, $ad)
     $CI->load->model('images');
     $CI->load->model('adimages');
 
-    $cardimgID = $CI->adimages->getAdImageID($ad['ID']);
+    $cardimgID = $CI->adimages->getAdImageID($ad->ID);
     $imgrecord = $CI->images->get($cardimgID);
 
     $card = array();
-    $card['cardlink']       = base_url('Ad_detail/index/'.$ad['ID']);
-    $card['cardimgsrc']     = base_url($imgrecord['src']);
-    $card['cardimagealt']   = $ad['title'];
-    $card['cardtitle']      = $ad['title'];
-    $card['cardcaption']    = $ad['description'];
+    $card['cardlink']       = base_url('Ad_detail/index/'.$ad->ID);
+    $card['cardimgsrc']     = base_url($imgrecord->src);
+    $card['cardimagealt']   = $ad->title;
+    $card['cardtitle']      = $ad->title;
+    $card['cardcaption']    = $ad->description;
 
     return $card;
 }

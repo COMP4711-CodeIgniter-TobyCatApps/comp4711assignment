@@ -12,8 +12,8 @@ function makeCarousel($images)
         $item = array();
 
         $item['extraclasses']   = ($count == 0) ? 'active' : '';
-        $item['imgsrc']         = base_url($image['src']);
-        $item['imgalt']         = $image['alt'];
+        $item['imgsrc']         = base_url($image->src);
+        $item['imgalt']         = $image->alt;
 
         $carousel['items'][] = $item;
     }
