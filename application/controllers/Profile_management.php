@@ -37,31 +37,31 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+/*
+ * Profile Management controller
+ */
 class Profile_Management extends Application {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see http://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
-	{
-		//$this->load->view('profile_management');
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('formfields');
+    }
 
+    public function index()
+	{
         $this->data['page_title'] = 'Manage Profile';
         $this->data['page_body'] = 'profile_management';
+        $this->data['navbar_activelink'] = base_url('/Profile_Management');
 
-        $this->data['navbar_activelink']    = base_url('/Profile_Management');
+        // Create form fields
+        $this->data['fname'] = makeTextField('Name:', 'name', '');
+        $this->data['foldpassword'] = makePasswordField('Old Password:', 'opswd', '');
+        $this->data['fnewpassword'] = makePasswordField('New Password', 'npswd', '');
+        $this->data['fconfirmpassword'] = makePasswordField('Confirm Password', 'cpswd', '');
+        $this->data['femail'] = makeTextField('Email', 'email', '');
+        $this->data['fsubmit'] = makeSubmitButton('Submit', 'Submit');
+        $this->data['fcancel'] = makeCancelButton('Cancel');
 
         $this->render();
 	}

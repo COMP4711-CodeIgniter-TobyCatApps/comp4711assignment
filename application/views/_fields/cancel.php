@@ -1,0 +1,1 @@
+<input type="button" class="btn btn-default" value="{label}" onClick="history.go(-1);return true;">
