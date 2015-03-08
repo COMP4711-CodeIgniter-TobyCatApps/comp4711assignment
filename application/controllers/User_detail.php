@@ -39,75 +39,67 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_detail extends Application {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see http://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
-	{
-		        // generate cards
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('formfields');
+        $this->load->model('users');
         $this->load->model('ads');
-        $ads = $this->ads->all();
+        $this->load->model('categories');
+        $this->load->model('reviews');
 
-        $cards = array();
+        $this->load->helper('card');
+        $this->load->helper('grid');
+        $this->load->helper('array');
+    }
 
-        foreach($ads as $ad)
-        {
-            $card = array();
-            $card['cardlink']       = base_url('Ad_Detail');
-            $card['cardimgsrc']     = base_url('assets/img/portfolio/cabin.png');
-            $card['cardimagealt']   = $ad['title'];
-            $card['cardtitle']      = $ad['title'];
-            $card['cardcaption']    = $ad['description'];
-            $cards[] = $this->parser->parse('_card',$card,true);
-        }
+    private function getUserDetails($id)
+    {
+        $record = $this->users->get($id);
 
-        // generate columns, with the cards inside them
-        $columns = array();
-        while(count($cards) > 0)
-        {
-            $column = array();
-            $column['columnclass']  = 'col-sm-4';
-            $column['content']      = array_pop($cards);
-            $columns[] = $column;
-        }
+        $this->data['username'] = $record->username;
+        $this->data['displayname'] = $record->displayname;
+        $this->data['email'] = $record->email;
+    }
 
-        // generate rows with the columns inside them (3 columns per row)
-        $rows = array();
-        $rows['row'] = array();
-        while(count($columns) > 0)
-        {
-            $row = array();
-            $row['column'] = array();
-            for($count = 0; $count < 3; $count++)
-            {
-                if(count($columns) > 0)
-                {
-                    $row['column'][] = array_pop($columns);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            $rows['row'][] = $row;
-        }
+    public function confirm()
+    {
+        // create a record to add to the database
+        $addRecord = $this->reviews->create();
 
-        // generate the grid
-        // $this->data['cards'] = $cards[0];
-        $this->data['cards'] = $this->parser->parse('_grid', $rows, true);
+        $addRecord->from = 'from user'; // need to update this once log-in is implemented
+        $addRecord->to = 'to user'; // need to update this once log-in is implemented
+        $addRecord->review = $this->input->post('review');
+        $addRecord->rating = $this->input->post('rating');
 
+        // Add validation here once log in is implemented
+        // there shouldn't be an anonymous review
+
+        $this->reviews->add($addRecord);
+
+        redirect('/user_detail');
+    }
+
+    public function present()
+    {
+        // Get user details
+        $id = $this->users->get_current_user_id();
+        if($id != null)
+            $this->getUserDetails($id);
+        else
+            redirect('/register');
+
+        // Get user ads
+        $ads = $this->ads->some('userID', $id);
+        $this->data['cards'] = generateCards($this, $ads);
+
+        // rating
+        $this->data['frating'] = makeHiddenField('rating', '');
+        // for testing purposes so you can see the data
+        //$this->data['frating'] = makeTextField('Display Name:', 'rating', '');
+
+        $this->data['freview'] = makeTextArea('Your Review:', 'review', '');
+        $this->data['fsubmit'] = makeSubmitButton('Submit', "Submit", 'btn-success');
 
         $this->data['page_title'] = 'User Detail';
         $this->data['page_body'] = 'user_detail';
@@ -115,8 +107,13 @@ class User_detail extends Application {
         $this->data['navbar_activelink'] = base_url('/User_detail');
 
         $this->render();
+    }
+
+    public function index()
+	{
+        $this->present();
 	}
 }
 
-/* End of file Profile_Management.php */
-/* Location: ./application/controllers/Profile_Management.php */
+/* End of file User_detail.php */
+/* Location: ./application/controllers/User_detail.php */

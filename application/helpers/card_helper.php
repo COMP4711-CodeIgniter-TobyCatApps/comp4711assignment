@@ -12,10 +12,8 @@
 function adToCard($CI, $ad)
 {
     $CI->load->model('images');
-    $CI->load->model('adimages');
 
-    $cardimgID = $CI->adimages->getAdImageID($ad->ID);
-    $imgrecord = $CI->images->get($cardimgID);
+    $imgrecord = $CI->images->getAdImage($ad->ID);
 
     $card = array();
     $card['cardlink']       = base_url('Ad_detail/index/'.$ad->ID);
@@ -25,4 +23,28 @@ function adToCard($CI, $ad)
     $card['cardcaption']    = $ad->description;
 
     return $card;
+}
+
+
+function generateCards($CI, $ads)
+{
+    $CI->load->library('parser');
+
+    // putting ads onto the card views
+    $cards = array();
+    foreach($ads as $ad)
+    {
+        $card = adToCard($CI, $ad);   // convert ad into a card object
+        $cards[] = $CI->parser->parse('_card', $card, true);
+    }
+
+    // put cards into columns
+    $columns = makeColumns('col-sm-4', $cards);
+
+    // generate rows with the columns inside them (3 columns per row)
+    $grid = array();
+    $grid['rows'] = makeGroups(3, 'columns', $columns);
+
+    // return the card views
+    return $CI->parser->parse('_grid', $grid, true);
 }

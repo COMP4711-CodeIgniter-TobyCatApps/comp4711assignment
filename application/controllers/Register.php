@@ -26,13 +26,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
- * @since	Version 1.0.0
+ * @package CodeIgniter
+ * @author  EllisLab Dev Team
+ * @copyright   Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
+ * @copyright   Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @license http://opensource.org/licenses/MIT  MIT License
+ * @link    http://codeigniter.com
+ * @since   Version 1.0.0
  * @filesource
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -43,24 +43,95 @@ class Register extends Application {
     {
         parent::__construct();
         $this->load->helper('formfields');
+        $this->load->model('users');
     }
 
-	public function index()
-	{
+    public function confirm()
+    {
+        //if(empty($record))
+        $record = new stdClass();
+
+        // Extract submitted fields
+        $record->fdisplayname = $this->input->post('dname');
+        $record->fusername = $this->input->post('uname');
+        $record->fpassword = $this->input->post('pswd');
+        $record->fcpassword = $this->input->post('cpswd');
+        $record->femail = $this->input->post('email');
+
+        // validation
+        if(empty($record->fdisplayname))
+            $this->errors[] = 'You must specify display name.';
+        if(empty($record->fusername))
+            $this->errors[] = 'You must specify user name.';
+        // add database checking for username
+        if(empty($record->fpassword))
+            $this->errors[] = 'No password set.';
+        if(empty($record->fcpassword))
+            $this->errors[] = 'Confirm password.';
+        if(strcmp($record->fpassword, $record->fcpassword) !== 0)
+            $this->errors[] = 'Password do not match';
+        if (!filter_var($record->femail, FILTER_VALIDATE_EMAIL))
+            $this->errors[] = "Invalid email format.";
+
+        // redisplay if any errors
+        if(count($this->errors) > 0)
+        {
+            $this->present($record);
+            return; // make sure we don't try to save anything
+        }
+
+        // create a record to add to the database
+        $addRecord = $this->users->create();
+
+        $addRecord->type = 0;
+        $addRecord->username = $record->fusername;
+        $addRecord->password = $record->fpassword;
+        $addRecord->email = $record->femail;
+        $addRecord->displayname = $record->fdisplayname;
+
+        $this->users->add($addRecord);
+
+        redirect('/welcome');
+    }
+
+    public function present($record)
+    {
+        // format any errors
+        $message = '';
+
+        if(count($this->errors) > 0)
+        {
+            foreach($this->errors as $error)
+                $message .= $error . BR;
+        }
+
+        $this->data['message'] = $message;
+
+        $this->data['fdisplayname'] = makeTextField('Display Name:', 'dname', $record->fdisplayname);
+        $this->data['fusername'] = makeTextField('User Name:', 'uname', $record->fusername);
+        $this->data['fpassword'] = makePasswordField('Password', 'pswd', $record->fpassword);
+        $this->data['fcpassword'] = makePasswordField('Confirm Password', 'cpswd', $record->fcpassword);
+        $this->data['femail'] = makeTextField('Email', 'email', $record->femail);
+        $this->data['fsubmit'] = makeSubmitButton('Submit', 'Submit');
+        $this->data['fcancel'] = makeCancelButton('Cancel');
+
         $this->data['page_title'] = 'Register';
         $this->data['page_body'] = 'register';
         $this->data['navbar_activelink'] = base_url('/Register');
 
-        // Create form fields
-        $this->data['fdisplayname'] = makeTextField('Display Name:', 'dname', '');
-        $this->data['fusername'] = makePasswordField('User Name:', 'uname', '');
-        $this->data['fpassword'] = makePasswordField('Password', 'pswd', '');
-        $this->data['fcpassword'] = makePasswordField('Confirm Password', 'cpswd', '');
-        $this->data['femail'] = makeTextField('Email', 'email', '');
-        $this->data['fsubmit'] = makeSubmitButton('Submit', 'Submit');
-        $this->data['fcancel'] = makeCancelButton('Cancel');
-
         $this->render();
+    }
+
+	public function index()
+	{
+        $record = new stdClass();
+        $record->fdisplayname = '';
+        $record->fusername = '';
+        $record->fpassword = '';
+        $record->fcpassword = '';
+        $record->femail = '';
+
+        $this->present($record);
 	}
 }
 

@@ -43,6 +43,25 @@ if (!function_exists('makeTextField')) {
 }
 
 /**
+ *  Construct a hidden input.
+ *
+ * @param string $name ID and name of the control; s/b the same as the RDB table column
+ * @param mixed $value Initial value for the control
+ */
+if (!function_exists('makeHiddenField')) {
+
+    function makeHiddenField($name, $value) {
+        $CI = &get_instance();
+        $parms = array(
+            'name' => $name,
+            'value' => htmlentities($value, ENT_COMPAT, 'UTF-8'),
+        );
+        return $CI->parser->parse('_fields/hiddenfield', $parms, true);
+    }
+
+}
+
+/**
  *  Construct a password input.
  *
  * @param string $label Descriptive label for the control
@@ -208,5 +227,18 @@ if (!function_exists('showImage')) {
 
 }
 
-/* End of file */
+if (!function_exists('makeUploadImageField')) {
 
+    function makeUploadImageField($label, $name, $multiple) {
+        $CI = &get_instance();
+        $parms = array(
+            'label' => $label,
+            'name' => $name,
+            'multiple' => $multiple ? 'multiple' : ''
+        );
+        return $CI->parser->parse('_fields/uploadimage', $parms, true);
+    }
+
+}
+
+/* End of file */

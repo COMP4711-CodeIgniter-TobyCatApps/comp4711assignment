@@ -11,11 +11,13 @@
 
     <title>{page_title}</title>
 
-    <link href="assets/css/custom.css" rel="stylesheet">
-    <link href="{baseurl}assets/css/bootstrap.css" rel="stylesheet">
-    <link href="{baseurl}assets/css/card.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/starter-template/starter-template.css" rel="stylesheet">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="{baseurl}assets/css/bootstrap.css" rel="stylesheet">
+    <link href="{baseurl}assets/css/formfields.css" rel="stylesheet">
+    <link href="{baseurl}assets/css/custom.css" rel="stylesheet">
+    <link href="{baseurl}assets/css/card.css" rel="stylesheet">
+    <link href="{baseurl}assets/css/simple-sidebar.css" rel="stylesheet">
 </head>
 
 <body>
@@ -48,7 +50,12 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{baseurl}assets/js/jquery.min.js"></script>
     <script src="{baseurl}assets/js/bootstrap.min.js"></script>
+    <script src="{baseurl}assets/js/formfields.js"></script>
+    <script src="{baseurl}assets/js/rating.js"></script>
 
+    <!-- for rich text editing -->
+    <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+    <script>tinymce.init({selector:'textarea'});</script>
 
 </body>
 </html>

@@ -184,6 +184,7 @@ class MY_Model extends CI_Model implements Active_Record {
         // update the DB table appropriately
         $key = $data[$this->_keyField];
         $object = $this->db->insert($this->_tableName, $data);
+        return $this->highest();
     }
 
     // Retrieve an existing DB record as an object
@@ -254,11 +255,12 @@ class MY_Model extends CI_Model implements Active_Record {
 
     // Determine the highest key used
     function highest() {
-        $this->db->select_max($this->_keyField);
+        $key = $this->_keyField;
+        $this->db->select_max($key);
         $query = $this->db->get($this->_tableName);
         $result = $query->result();
         if (count($result) > 0)
-            return $result[0]->num;
+            return $result[0]->$key;
         else
             return null;
     }

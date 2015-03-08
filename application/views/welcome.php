@@ -1,10 +1,13 @@
-<div class="row">
-    <div class="col-md-3 menu-background">
+<div>
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+        <div class="container">
+           {search}
+        </div>
         {categories}
     </div>
-    <div class="col-md-9">
-        {cards}
-    </div>
+    <div class="errors">{message}</div>
+    <div>{cards}</div>
 
     <div class="clearfix visible-lg"></div>
 </div>

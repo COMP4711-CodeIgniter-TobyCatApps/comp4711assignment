@@ -1,0 +1,5 @@
+.thumbnailContainer .thumbnail
+{
+    max-height:150px;
+    display:inline;
+}

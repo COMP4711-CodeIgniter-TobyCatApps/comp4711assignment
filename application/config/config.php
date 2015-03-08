@@ -343,7 +343,7 @@ $config['cache_query_string'] = FALSE;
 | http://codeigniter.com/user_guide/libraries/sessions.html
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = '72402ada28d41760762f08facdada69d60fd1ba5';
 
 /*
 |--------------------------------------------------------------------------

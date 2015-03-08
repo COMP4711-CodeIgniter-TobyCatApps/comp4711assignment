@@ -55,6 +55,11 @@ define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0755);
 
+/**
+ * define session keys
+ */
+define('SESSION_UID', 'uid');
+
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
