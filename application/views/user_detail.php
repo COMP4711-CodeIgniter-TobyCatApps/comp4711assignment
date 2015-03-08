@@ -7,7 +7,10 @@
         <h4>{email}</h4>
     </div>
     <div>
-        <h4>Reputation: {reputation}</h4>
+        <h4>Reputation:</h4>
+            <div id="stars" class="rating">
+                {reputation}
+            </div>
     </div>
     <div>
         <h4>Ads</h4>
@@ -15,21 +18,9 @@
     </div>
     <div>
         <h4>Reviews</h4>
+        <hr></hr>
         {reviews}
     </div>
-    <form action="/user_detail/confirm" method="post">
-        {frating}
-        {freview}
-        <div id="stars" class="rating">
-            <span id="1" ><i class="glyphicon glyphicon-star"></i></span>
-            <span id="2" ><i class="glyphicon glyphicon-star"></i></span>
-            <span id="3" ><i class="glyphicon glyphicon-star"></i></span>
-            <span id="4" ><i class="glyphicon glyphicon-star"></i></span>
-            <span id="5" ><i class="glyphicon glyphicon-star"></i></span>
-            <!--<span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>-->
-        </div>
-        {fsubmit}
-    </form>
-
+    {rating}
 </div><!-- /.container -->
 

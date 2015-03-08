@@ -15,7 +15,7 @@ class Profile_Management extends Application {
 
     public function index()
     {
-        $currentUserId = $this->users->get_current_user_id();
+        $currentUserId = $this->users->getCurrentUserId();
         if($currentUserId != null)
         {
             $this->user($currentUserId);
@@ -49,8 +49,8 @@ class Profile_Management extends Application {
 
     public function user($id)
     {
-        $currentUserId = $this->users->get_current_user_id();
-        $isAdmin = $this->users->is_current_user_admin();
+        $currentUserId = $this->users->getCurrentUserId();
+        $isAdmin = $this->users->isCurrentUserAdmin();
 
         // let the user see the form if user is either ADMIN or the CORRECT user
         if($isAdmin || $currentUserId == $id)
@@ -67,7 +67,7 @@ class Profile_Management extends Application {
 
     public function confirm()
     {
-        $currentUserId = $this->users->get_current_user_id();
+        $currentUserId = $this->users->getCurrentUserId();
 
         // load the upload library, and configure it
         $config['upload_path']   = './uploads/users/'.$currentUserId;

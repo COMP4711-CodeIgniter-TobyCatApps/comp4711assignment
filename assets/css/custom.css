@@ -43,6 +43,10 @@
     font-size: 2em;
 }
 
+.rating.small span {
+    font-size: 1em;
+}
+
 .rating span.set{
     color: gold;
 }

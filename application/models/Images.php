@@ -92,4 +92,19 @@ class Images extends MY_Model
         return $records;
     }
 
+    public function delete($imageID,$key2=null)
+    {
+        // abort early if image doesn't exist
+        $img = $this->get($imageID);
+        if($img == null)
+        {
+            return;
+        }
+
+        // delete the image file
+        unlink($img->src);
+
+        parent::delete($imageID);
+    }
+
 }

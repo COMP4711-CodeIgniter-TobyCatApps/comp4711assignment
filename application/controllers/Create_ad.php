@@ -50,7 +50,7 @@ class Create_ad extends Application {
 		$newAd->description = $this->input->post('ad_description');
 		$newAd->flags = 0;			//0 complaints against this post
 		$newAd->uploaded = date('Y-m-d'); //2015-03-04 yyyy-mm-dd
-		$newAd->userID = $this->users->get_current_user_id();
+		$newAd->userID = $this->users->getCurrentUserId();
 
 		// validate user input
 		if ($newAd->userID == null)
@@ -81,7 +81,7 @@ class Create_ad extends Application {
 		$this->load->library('upload');
 		$config['upload_path']   = './uploads/posts/'.$newAd->ID;
 		$config['allowed_types'] = 'gif|jpg|png';
-		$config['max_size']      = 100;
+		$config['max_size']      = 9999;
 		$this->upload->initialize($config);
 
 		// make a directory for the uploaded file(s)

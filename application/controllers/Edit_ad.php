@@ -72,7 +72,7 @@ class Create_ad extends Application {
 
 		$record->flags = 0;			//0 complaints against this post
 		$record->uploaded = date('Y-m-d'); //2015-03-04 yyyy-mm-dd
-		$record->userID = $this->users->get_current_user_id();
+		$record->userID = $this->users->getCurrentUserId();
 
 
 		// validate user input

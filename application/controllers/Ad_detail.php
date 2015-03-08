@@ -27,7 +27,8 @@ class Ad_Detail extends Application {
         $this->data['ad_title']         = $ad->title;
         $this->data['ad_category']      = $category->name;
         $this->data['ad_description']   = $ad->description;
-        $this->data['uploader_email']   = $user->email;
+        $this->data['uploader']         = $user->displayname;
+        $this->data['uploader_link']    = base_url('/User_detail/index/'.$user->username);
 
         // common to all pages
         $this->data['page_title'] = 'Starter Template for Bootstrap'; //Change to whatever the ad is later

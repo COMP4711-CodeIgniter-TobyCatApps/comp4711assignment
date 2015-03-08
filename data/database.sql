@@ -136,9 +136,9 @@ CREATE TABLE IF NOT EXISTS `reviews` (
 --
 
 INSERT INTO `reviews` (`ID`, `to`, `from`, `review`, `rating`) VALUES
-(6, 'to user', 'from user', '<p>test</p>', 3),
-(13, 'to user', 'from user', '<p>hello there</p>', 0),
-(14, 'to user', 'from user', '', 0);
+(6, 'heck', 'heman', '<p>test review from Gray Skull</p>', 3),
+(13, 'heck', 'Anonymous', '<p>We are watching</p>', 4),
+(14, 'heck', 'Socrates', '<p>To know, is to know nothing. That is the meaning of true knowledge.</p>', 5);
 
 -- --------------------------------------------------------
 
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`ID`, `type`, `username`, `password`, `email`, `displayname`, `imageFileName`) VALUES
-(7, 1, 'Bob Monkhouse', 'p@$sw0rD', 'bob@bcit.ca', 'Bob Monkhouse', ''),
+(7, 1, 'admin', 'admin', 'bob@bcit.ca', 'Bob Monkhouse', ''),
 (8, 0, 'Elayne Boosler', 'p@$sw0rD', 'elayne@bcit.ca', 'Elayne Boosler', ''),
 (9, 0, 'Mark Russell', 'p@$sw0rD', 'mark@bcit.ca', 'Mark Russell', ''),
 (10, 0, 'Anonymous', 'p@$sw0rD', 'anonymous@bcit.ca', 'Anonymous', ''),

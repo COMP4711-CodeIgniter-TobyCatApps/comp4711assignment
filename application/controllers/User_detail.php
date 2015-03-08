@@ -1,40 +1,5 @@
 <?php
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP
- *
- * This content is released under the MIT License (MIT)
- *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
- * @since	Version 1.0.0
- * @filesource
- */
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_detail extends Application {
@@ -42,6 +7,7 @@ class User_detail extends Application {
     public function __construct()
     {
         parent::__construct();
+        $this->load->library('parser');
         $this->load->helper('formfields');
         $this->load->model('users');
         $this->load->model('ads');
@@ -53,55 +19,167 @@ class User_detail extends Application {
         $this->load->helper('array');
     }
 
-    private function getUserDetails($id)
+    private function getUserDetails($username)
     {
-        $record = $this->users->get($id);
+        $record = $this->users->some('username', $username);
 
-        $this->data['username'] = $record->username;
-        $this->data['displayname'] = $record->displayname;
-        $this->data['email'] = $record->email;
-        $this->data['imagesrc'] = $this->users->getUserImageSrc($id);
+        // use the first record (username should be unique)
+        $this->data['imagesrc'] = $this->users->getUserImageSrc($record[0]->ID);
+        $this->data['username'] = $record[0]->username;
+        $this->data['displayname'] = $record[0]->displayname;
+        $this->data['email'] = $record[0]->email;
+
+        return $record[0]->ID;
     }
+
+    private function generateStars($setStars, $numStars)
+    {
+        $stars = array();
+        for ($i = 1; $i <= $numStars; $i++)
+        {
+            $star = array( 'rate' => 'rated',
+                           'status' => ($i <= $setStars ? 'class=set' : 'class=not-set'));
+            $stars[] = $star;
+        }
+
+        return $stars;
+    }
+
+    // create the stars
+    private function getReviewStars($username)
+    {
+        // get total number of stars
+        $records = $this->reviews->some('to', $username);
+        $total = 0;
+
+        // get the average and round up to nearest whole number
+        foreach($records as $record)
+        {
+            $total += $record->rating;
+        }
+
+        $ratingCount = sizeof($records);
+        $rating = ceil($total/($ratingCount == 0 ? 1 : $ratingCount));
+
+
+        $reviewStars = array();
+        $reviewStars['stars'] = $this->generateStars($rating, NUMRATING);
+
+        return $this->parser->parse('_stars', $reviewStars, true);
+    }
+
+    // get reviews
+    private function getReviews($username)
+    {
+        // get reviews
+        $records = $this->reviews->some('to', $username);
+
+        // generate reviews
+        $reviews = array();
+        foreach($records as $record)
+        {
+            $review = array();
+            $review['from'] = $record->from;
+
+            // get user rating and display stars
+            $userrating = array();
+            $userrating['stars'] = $this->generateStars($record->rating, NUMRATING);
+            $review['stars'] = $this->parser->parse('_stars', $userrating, true);
+
+            $review['review'] = $record->review;
+            $reviews[] = $review;
+        }
+
+        $allReviews['rows'] = $reviews;
+        return $this->parser->parse('_reviews', $allReviews, true);
+    }
+
+    private function generateReviewForm($username, $viewer)
+    {
+        // get review
+        $review = $this->reviews->getReviewFrom($viewer, $username);
+
+        // generate review form
+        $field['action'] = '/user_detail/confirm';
+        $field['frating'] = makeHiddenField('rating', '');
+        $field['fto'] = makeHiddenField('to', $username);
+        $field['ffrom'] = makeHiddenField('from', $viewer);
+        $field['fid'] = makeHiddenField('ID', $review->ID);
+        // for testing purposes so you can see the data
+        //$this->data['frating'] = makeTextField('Display Name:', 'rating', '');
+
+        // generate rating stars
+        $stars = array();
+        for ($i = 1; $i <= NUMRATING; $i++)
+        {
+            $star = array( 'rate' => $i,
+                           'status' => ($i <= $review->rating ? 'class=set' : 'class=not-set'));
+            $stars[] = $star;
+        }
+
+        $ratedStars = array();
+        $ratedStars['stars'] = $stars;
+        $field['stars'] = $this->parser->parse('_stars', $ratedStars, true);
+
+        $field['freview'] = makeTextArea('Your Review:', 'review', $review->review);
+        $field['fsubmit'] = makeSubmitButton('Submit', "Submit", 'btn-success');
+
+        if($viewer != null && $viewer != $username)
+        {
+            return $this->parser->parse('_rating_form', $field, true);
+        }
+        else
+        {
+            return '';
+        }
+    }
+
 
     public function confirm()
     {
         // create a record to add to the database
         $addRecord = $this->reviews->create();
 
-        $addRecord->from = 'from user'; // need to update this once log-in is implemented
-        $addRecord->to = 'to user'; // need to update this once log-in is implemented
+        $addRecord->ID = $this->input->post('ID');
+        $addRecord->from = $this->input->post('from');
+        $addRecord->to = $this->input->post('to');
         $addRecord->review = $this->input->post('review');
         $addRecord->rating = $this->input->post('rating');
 
         // Add validation here once log in is implemented
         // there shouldn't be an anonymous review
 
-        $this->reviews->add($addRecord);
+        // Create review if review doesn't exist
+        // else update
+        if($this->reviews->exists($addRecord->ID))
+        {
+            $this->reviews->update($addRecord);
 
-        redirect('/user_detail');
+        }
+        else
+        {
+            $this->reviews->add($addRecord);
+        }
+
+
+        redirect('/user_detail/index/'. $addRecord->to);
     }
 
-    public function present()
+    public function present($username)
     {
-        // Get user details
-        $id = $this->users->get_current_user_id();
-        if($id != null)
-            $this->getUserDetails($id);
-        else
-            redirect('/register');
+        $id = $this->getUserDetails($username);
+
+        $curruser = $this->users->getCurrentUser();
+        $viewer = ($curruser != null) ? $curruser->username : null;
 
         // Get user ads
         $ads = $this->ads->some('userID', $id);
+
         $this->data['cards'] = generateCards($this, $ads);
 
-        // rating
-        $this->data['frating'] = makeHiddenField('rating', '');
-        // for testing purposes so you can see the data
-        //$this->data['frating'] = makeTextField('Display Name:', 'rating', '');
-
-        $this->data['freview'] = makeTextArea('Your Review:', 'review', '');
-        $this->data['fsubmit'] = makeSubmitButton('Submit', "Submit", 'btn-success');
-
+        $this->data['reputation'] = $this->getReviewStars($username);
+        $this->data['reviews'] = $this->getReviews($username);
+        $this->data['rating'] = $this->generateReviewForm($username, $viewer);
         $this->data['page_title'] = 'User Detail';
         $this->data['page_body'] = 'user_detail';
 
@@ -110,10 +188,25 @@ class User_detail extends Application {
         $this->render();
     }
 
-    public function index()
-	{
-        $this->present();
-	}
+    public function index($username = null)
+    {
+        if($username != null)
+        {
+            $this->present($username);
+        }
+        else
+        {
+            $curruser = $this->users->getCurrentUser();
+            if($curruser != null)
+            {
+                $this->present($curruser->username);
+            }
+            else
+            {
+                redirect('/');
+            }
+        }
+    }
 }
 
 /* End of file User_detail.php */

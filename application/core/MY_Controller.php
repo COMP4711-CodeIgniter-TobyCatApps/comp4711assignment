@@ -14,7 +14,7 @@ class Application extends CI_Controller {
         $this->load->model('users');
 
         // menu items for the navigation bar
-        if($this->users->get_current_user_id() == null)
+        if($this->users->getCurrentUserId() == null)
         {
             $this->choices['Register']           = base_url('/Register');
         }
@@ -23,8 +23,9 @@ class Application extends CI_Controller {
             $this->choices['Profile Management'] = base_url('/Profile_management');
             $this->choices['User Details']       = base_url('/User_detail');
             $this->choices['Create Ad']          = base_url('/Create_ad');
+            $this->choices['Manage Ads']          = base_url('/Manage_ads');
         }
-        if($this->users->is_current_user_admin())
+        if($this->users->isCurrentUserAdmin())
         {
             $this->choices['Admin Page']     = base_url('/Admin');
         }
@@ -47,7 +48,7 @@ class Application extends CI_Controller {
         $password    = $_POST['password'];
 
         // login the user if they provided the correct credentials
-        $user_id = $this->users->get_id_by_credentials($username,$password);
+        $user_id = $this->users->getIdByCredentials($username,$password);
         if($user_id != null)
         {
             $this->session->set_userdata(SESSION_UID,$user_id);
@@ -74,7 +75,7 @@ class Application extends CI_Controller {
         $this->data['navbar_buttons'] = build_menu_bar($this->choices, $this->data['navbar_activelink']);
         $this->data['page_body'] = $this->parser->parse($this->data['page_body'], $this->data, true);
 
-        if($this->users->get_current_user_id() != null)
+        if($this->users->getCurrentUserId() != null)
         {
             $this->data['navbar_user'] = $this->parser->parse('_logged_in',$this->data,true);
         }

@@ -52,6 +52,7 @@
     <script src="{baseurl}assets/js/bootstrap.min.js"></script>
     <script src="{baseurl}assets/js/formfields.js"></script>
     <script src="{baseurl}assets/js/rating.js"></script>
+    <script src="{baseurl}assets/js/sidebar.js"></script>
 
     <!-- for rich text editing -->
     <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>

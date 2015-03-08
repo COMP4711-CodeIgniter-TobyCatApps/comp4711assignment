@@ -137,6 +137,7 @@ define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 */
 
 define('BR', '<br/>');
+define('NUMRATING', 5);
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

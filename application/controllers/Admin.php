@@ -25,7 +25,7 @@ class Admin extends Application
 
 		public function index()
 		{
-			if(!$this->users->is_current_user_admin())
+			if(!$this->users->isCurrentUserAdmin())
 			{
 				redirect('Welcome/index/user not authorized to see this page.');
 				return;
@@ -93,11 +93,11 @@ class Admin extends Application
 	//Delete an user and any post associated with the user and refresh the page to update the view
 		public function deleteuser($userID)
 		{
-				$adArray = $this->ads->some('userID',$userID);
-				foreach($adArray as $ad)
-				{
-					 $this->ads->delete($ad->ID);
-				}
+				// $adArray = $this->ads->some('userID',$userID);
+				// foreach($adArray as $ad)
+				// {
+				// 	 $this->ads->delete($ad->ID);
+				// }
 
 				$this->users->delete($userID);
 				redirect('/Admin');
