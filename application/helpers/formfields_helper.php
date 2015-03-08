@@ -229,11 +229,12 @@ if (!function_exists('showImage')) {
 
 if (!function_exists('makeUploadImageField')) {
 
-    function makeUploadImageField($label, $name, $width = 120, $height = 80) {
+    function makeUploadImageField($label, $name, $multiple) {
         $CI = &get_instance();
         $parms = array(
             'label' => $label,
-            'name' => $name
+            'name' => $name,
+            'multiple' => $multiple ? 'multiple' : ''
         );
         return $CI->parser->parse('_fields/uploadimage', $parms, true);
     }

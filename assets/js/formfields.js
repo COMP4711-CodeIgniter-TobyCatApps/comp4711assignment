@@ -1,15 +1,36 @@
 function updateUploadImagePreview(input)
 {
-    var thumbnailElement =
-        input.parentNode.querySelector(".uploadImagePreview");
+    // creating acquiring handles to DOM elements
+    var thumbnailContainerElement =
+        input.parentNode.querySelector('.thumbnailContainer');
 
-    if (input.files && input.files[0]) {
+    // clear previous image previews
+    while(thumbnailContainerElement.firstChild != null)
+    {
+        thumbnailContainerElement.firstChild.remove();
+    }
+
+    // load new images as image previews
+    if (input.files) {
+        // create file reader
         var reader = new FileReader();
 
-        reader.onload = function (e) {
+        // override onload callback
+        var i = 0;
+        reader.onload = function(e) {
+            // create thumbnail
+            var thumbnailElement = document.createElement('img');
+            thumbnailElement.classList.add('thumbnail')
             thumbnailElement.setAttribute('src', e.target.result);
+
+            // append thumbnail to document
+            thumbnailContainerElement.appendChild(thumbnailElement);
+
+            // load the next file if there is one
+            reader.readAsDataURL(input.files[i++]);
         };
 
-        reader.readAsDataURL(input.files[0]);
+        // begin loading images
+        reader.readAsDataURL(input.files[i++]);
     }
 }

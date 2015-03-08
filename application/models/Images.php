@@ -8,8 +8,57 @@ class Images extends MY_Model
     // Constructor
     public function __construct()
     {
-        parent::__construct('Images','ID');
+        parent::__construct('images','ID');
     }
+
+    /////////////////////////////
+    // active record interface //
+    /////////////////////////////
+
+    public function getAdImages($adID)
+    {
+        // get all image records with corresponding adID
+        $adImages = $this->some('adID',$adID);
+
+        // if there are no images, inject the null image
+        if(count($adImages) == 0)
+        {
+            $adImages[] = $this->getNullImage();
+        }
+
+        // return...
+        return $adImages;
+    }
+
+    public function getAdImage($adID)
+    {
+        // get all images for the ad, and return the first one in the array
+        $adImages = $this->getAdImages($adID);
+        return $adImages[0];
+    }
+
+    public function getNullImage()
+    {
+        $nullImageRecord = $this->create();
+        $nullImageRecord->ID   = 0;
+        $nullImageRecord->alt  = 'no image';
+        $nullImageRecord->src  = 'assets/img/default-image.png';
+        $nullImageRecord->adID = 0;
+        return $nullImageRecord;
+    }
+
+    public function addAdImage($alttext,$filename,$adID)
+    {
+        $newImage = $this->images->create();
+        $newImage->alt  = $alttext;
+        $newImage->src  = $filename;
+        $newImage->adID = $adID;
+        $this->add($newImage);
+    }
+
+    ////////////////
+    // basic CRUD //
+    ////////////////
 
     // retrieve a single row
     public function get($pkeyval1,$pkeyval2 = null)
@@ -17,29 +66,9 @@ class Images extends MY_Model
         $record = parent::get($pkeyval1,$pkeyval2);
         if($record)
         {
-            $record->src = $this->imagesRoot.$record->src;
+            $record->src = $this->imagesRoot.$record->adID.'/'.$record->src;
         }
         return $record;
-    }
-
-    public function getImagesForAd($adID)
-    {
-
-        // get IDs of images for the passed ad
-        $imageIDs = $this->adimages->getAdImageIDs($adID);
-
-        // get the actual image records to be returned while modifying their src
-        // path
-        $imageRecords = array();
-        foreach($imageIDs as $imageID)
-        {
-            $imageRecord = parent::get($imageID);
-            $imageRecord->src = $this->imagesRoot.$imageRecord->src;
-            $imageRecords[] = $imageRecord;
-        }
-
-        // return them
-        return $imageRecords;
     }
 
     public function some($column,$value = null)
@@ -47,7 +76,7 @@ class Images extends MY_Model
         $records = parent::some($column,$value);
         foreach($records as $record)
         {
-            $record->src = $this->imagesRoot.$record->src;
+            $record->src = $this->imagesRoot.$record->adID.'/'.$record->src;
         }
         return $records;
     }
@@ -58,7 +87,7 @@ class Images extends MY_Model
         $records = parent::all();
         foreach($records as $record)
         {
-            $record->src = $imagesRoot.$record->src;
+            $record->src = $imagesRoot.$record->adID.'/'.$record->src;
         }
         return $records;
     }

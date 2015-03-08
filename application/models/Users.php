@@ -4,7 +4,7 @@ class Users extends MY_Model
 {
     public function __construct()
     {
-        parent::__construct('Users','ID');
+        parent::__construct('users','ID');
     }
 
     /**

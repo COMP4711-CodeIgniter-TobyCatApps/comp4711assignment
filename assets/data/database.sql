@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2015 at 11:22 PM
+-- Generation Time: Mar 08, 2015 at 05:42 AM
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -23,33 +23,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `adimages`
---
-
-CREATE TABLE IF NOT EXISTS `adimages` (
-`ID` int(11) NOT NULL,
-  `adID` int(11) NOT NULL,
-  `imageID` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `adimages`
---
-
-INSERT INTO `adimages` (`ID`, `adID`, `imageID`) VALUES
-(1, 1, 1),
-(2, 1, 2),
-(3, 1, 3),
-(4, 1, 4),
-(5, 2, 2),
-(6, 3, 3),
-(7, 4, 4),
-(8, 5, 5),
-(9, 6, 6);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `ads`
 --
 
@@ -62,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `ads` (
   `description` text NOT NULL,
   `categoryID` int(11) NOT NULL,
   `title` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ads`
@@ -109,21 +82,22 @@ INSERT INTO `categories` (`ID`, `parentCategoryID`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `images` (
 `ID` int(11) NOT NULL,
   `alt` text NOT NULL,
-  `src` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+  `src` text NOT NULL,
+  `adID` int(11) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `images`
 --
 
-INSERT INTO `images` (`ID`, `alt`, `src`) VALUES
-(1, 'alternate text for image 1', 'cabin.png'),
-(2, 'alternate text for image 2', 'cake.png'),
-(3, 'alternate text for image 3', 'circus.png'),
-(4, 'alternate text for image 4', 'game.png'),
-(5, 'alternate text for image 5', 'safe.png'),
-(6, 'alternate text for image 6', 'submarine.png');
-
+INSERT INTO `images` (`ID`, `alt`, `src`, `adID`) VALUES
+(1, 'alternate text for image 1', 'cabin.png', 1),
+(2, 'alternate text for image 2', 'cake.png', 2),
+(3, 'alternate text for image 3', 'circus.png', 3),
+(4, 'alternate text for image 4', 'game.png', 4),
+(5, 'alternate text for image 5', 'safe.png', 5),
+(6, 'alternate text for image 6', 'submarine.png', 6),
+(7, 'nothimg importatnt', 'cake.png', 1);
 -- --------------------------------------------------------
 
 --
@@ -178,12 +152,6 @@ INSERT INTO `users` (`ID`, `type`, `username`, `password`, `email`, `displayname
 --
 
 --
--- Indexes for table `adimages`
---
-ALTER TABLE `adimages`
- ADD PRIMARY KEY (`ID`);
-
---
 -- Indexes for table `ads`
 --
 ALTER TABLE `ads`
@@ -218,11 +186,6 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `adimages`
---
-ALTER TABLE `adimages`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
---
 -- AUTO_INCREMENT for table `ads`
 --
 ALTER TABLE `ads`
@@ -236,12 +199,12 @@ MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 -- AUTO_INCREMENT for table `images`
 --
 ALTER TABLE `images`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `users`
 --

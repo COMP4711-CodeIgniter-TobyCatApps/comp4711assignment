@@ -9,13 +9,12 @@ class Ad_Detail extends Application {
         $this->load->model('ads');
         $this->load->model('users');
         $this->load->model('images');
-        $this->load->model('adimages');
         $this->load->model('categories');
 
         $this->load->helper('carousel');
 
         // make the carousel
-        $images = $this->images->getImagesForAd($adID);
+        $images = $this->images->getAdImages($adID);
         $carousel = makeCarousel($images);
         $this->data['ad_carousel'] =
             $this->parser->parse('_carousel', $carousel, true);

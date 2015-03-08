@@ -14,56 +14,51 @@ class Create_ad extends Application {
 	function __construct()
 	{
 		parent::__construct();
+
+		// load helpers
 		$this->load->helper('formfields_helper');
-		$this->load->model('Ads');
-		$this->load->model('Users');
-		$this->load->model('Categories');
-		$this->load->model('Adimages');
+
+		// load models
+		$this->load->model('ads');
+		$this->load->model('users');
+		$this->load->model('images');
+		$this->load->model('categories');
 	}
 
 	/**
 	 * Responsible for creating the form elements programatically by filling in templates
 	 *
 	 */
-	 public function index()
-	 {
-		$newAd = $this->Ads->create();
+	public function index()
+	{
+		$newAd = $this->ads->create();
 		$this->present($newAd);
-	 }
+	}
 
 	 /**
 	 *	Get variables from the form, validate them, and submit them to the RDB
 	 */
 	public function submit()
 	{
-		//create empty entry in RDB
-		$newAd = $this->Ads->create();
+		// create empty entry in RDB
+		$newAd = $this->ads->create();
 
+		// retrieve form parameters, and inject them into the ad object
 		$newAd->categoryID  = $this->input->post('ad_category');
-		$newAd->title       = $this->input->post('ad_title');
-		$newAd->price       = $this->input->post('ad_price');
+		$newAd->title = $this->input->post('ad_title');
+		$newAd->price = $this->input->post('ad_price');
 		$newAd->description = $this->input->post('ad_description');
-
 		$newAd->flags = 0;			//0 complaints against this post
 		$newAd->uploaded = date('Y-m-d'); //2015-03-04 yyyy-mm-dd
 		$newAd->userID = $this->users->get_current_user_id();
 
-
 		// validate user input
 		if ($newAd->userID == null)
-		{
 			$this->errors[] = 'You must log in to submit a post';
-		}
-
 		if (empty($newAd->title))
-		{
 			$this->errors[] = 'You must enter a title for your advertisement';
-		}
-
 		if ($newAd->price < 0)
-		{
 			$this->errors[] = 'You cannot enter a negative amount of money';
-		}
 
 		// redisplay if any errors
 		if (count($this->errors) > 0)
@@ -72,60 +67,79 @@ class Create_ad extends Application {
 			return; // make sure we don't try to save anything
 		}
 
-		//Create a new entry in the RDB
+		// insert or update the ad
 		if (empty($newAd->ID))
 		{
-			$this->Ads->add($newAd);
-
-			// associate the ad with the default image
-			$adimagerow = $this->Adimages->create();
-			$adimagerow->adID	= $this->Ads->highest();
-			$adimagerow->imageID = 7;
-			$this->Adimages->add($adimagerow);
+			$newAd->ID = $this->ads->add($newAd);
 		}
 		else
 		{
-			$this->Ads->update($newAd);
+			$this->ads->update($newAd);
 		}
+
+		// load & configure the upload library
+		$this->load->library('upload');
+		$config['upload_path']   = './uploads/posts/'.$newAd->ID;
+		$config['allowed_types'] = 'gif|jpg|png';
+		$config['max_size']      = 100;
+		$this->upload->initialize($config);
+
+		// make a directory for the uploaded file(s)
+		mkdir($config['upload_path']);
+
+		// do the uploading
+		if(!$this->upload->do_multi_upload('imagefiles'))
+		{
+			echo 'failed to upload image(s)<br/>';
+			echo $this->upload->display_errors();
+		}
+
+		// add the image to our database
+		$uploadDetails = $this->upload->get_multi_upload_data();
+		foreach ($uploadDetails as $uploadDetail) {
+			$this->images->addAdImage('',$uploadDetail['file_name'],$newAd->ID);
+		}
+
 		redirect('/');
 	 }
 
 	/**
-	*	Re-renders the form to the screen, including any error messages
-	*
-	*/
+	 *	Re-renders the form to the screen, including any error messages
+	 *
+	 */
 	public function present($record)
 	{
-		//error codes at the top
-		// format any errors
-		$message = '';
+		// inject error messages
+		$errorMessage = '';
 		if (count($this->errors) > 0)
 		{
 			foreach ($this->errors as $errors)
-				$message .= $errors . BR;
+			{
+				$errorMessage .= $errors . BR;
+			}
 		}
-		$this->data['message'] = $message;
+		$this->data['message'] = $errorMessage;
 
+		// inject template parameters
+		$this->data['navbar_activelink'] = base_url('/Create_ad');
+		$this->data['page_title'] = 'Starter Template for Bootstrap'; //Change to whatever the ad is later
+		$this->data['page_body'] = 'create_ad'; //the view that is to be rendered
 
 		// create combo box options
-		$categories = $this->Categories->all();
+		$categories = $this->categories->all();
 		$combobox_entries = array();
 		foreach ($categories as $key => $value) {
 			$combobox_entries[$categories[$key]->ID] = $categories[$key]->name;
 		}
 
-		// inject form parameters
-		$this->data['navbar_activelink'] = base_url('/Create_ad');
-		$this->data['page_title'] = 'Starter Template for Bootstrap'; //Change to whatever the ad is later
-		$this->data['ad_category'] = MakeComboField('category', 'ad_category', $record->categoryID, $combobox_entries);
-		$this->data['ad_title'] = MakeTextField('title', 'ad_title', $record->title);
-		$this->data['ad_price'] = MakeTextField('price', 'ad_price', $record->price);
-		$this->data['ad_description'] = MakeTextArea('description', 'ad_description', $record->description);
-
-		$this->data['page_body'] = 'create_ad'; //the view that is to be rendered
-
-		$this->data['ad_submit'] = makeSubmitButton('Process Ad', "Submit", 'btn-success');
-		$this->data['ad_cancel'] = makeCancelButton('Cancel');
+		// inject form fields
+		$this->data['ad_images']      = makeUploadImageField('Images:', 'imagefiles[]', true);
+		$this->data['ad_category']    = MakeComboField('Category:', 'ad_category', $record->categoryID, $combobox_entries);
+		$this->data['ad_title']       = MakeTextField('Title:', 'ad_title', $record->title);
+		$this->data['ad_price']       = MakeTextField('Price:', 'ad_price', $record->price);
+		$this->data['ad_description'] = MakeTextArea('Description:', 'ad_description', $record->description);
+		$this->data['ad_submit']      = makeSubmitButton('Process Ad:', "Submit", 'btn-success');
+		$this->data['ad_cancel']      = makeCancelButton('Cancel:');
 
 		$this->render();
 	}

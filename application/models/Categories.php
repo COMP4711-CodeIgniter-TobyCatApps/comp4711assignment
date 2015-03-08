@@ -4,6 +4,6 @@ class Categories extends MY_Model {
 
     // Constructor
     public function __construct() {
-        parent::__construct('Categories','ID');
+        parent::__construct('categories','ID');
     }
 }
