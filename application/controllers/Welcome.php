@@ -27,6 +27,12 @@ class Welcome extends Application {
      */
     public function index($message = '')
     {
+        $ads = $this->ads->all();
+        $this->present($ads,$message);
+    }
+
+    public function present($ads,$message)
+    {
         // inject template parameters
         $this->data['navbar_activelink'] = base_url('/');
         $this->data['page_title']        = 'Welcome';
@@ -37,7 +43,6 @@ class Welcome extends Application {
         $this->data['categories'] = $this->_generate_categories();
 
         // show all ads in the database
-        $ads = $this->ads->all();
         $this->data['cards'] = generateCards($this, $ads);
 
         // show messages if any
@@ -54,21 +59,8 @@ class Welcome extends Application {
      */
     public function category($categoryid)
     {
-        // inject template parameters
-        $this->data['navbar_activelink']    = base_url('/');
-        $this->data['page_title']           = 'Welcome';
-        $this->data['page_body']            = 'welcome';
-        $this->data['search'] = $this->parser->parse('_search',$this->data,true);
-
-        // generating categories for the sidebar
-        $this->data['categories'] = $this->_generate_categories();
-
-        // show all ads from a category
         $ads = $this->ads->some('categoryID',$categoryid);
-        $this->data['cards'] = generateCards($this, $ads);
-
-        // render...
-        $this->render();
+        $this->present($ads,'');
     }
 
     /**
@@ -80,21 +72,9 @@ class Welcome extends Application {
         // get post parameters
         $adname    = $_POST['adname'];
 
-        // inject template parameters
-        $this->data['navbar_activelink']    = base_url('/');
-        $this->data['page_title']           = 'Welcome';
-        $this->data['page_body']            = 'welcome';
-        $this->data['search'] = $this->parser->parse('_search',$this->data,true);
-
-        // generating categories for the sidebar
-        $this->data['categories'] = $this->_generate_categories();
-
         // show all ads with matching titles
         $ads = $this->ads->search($adname);
-        $this->data['cards'] = generateCards($this, $ads);
-
-        // render...
-        $this->render();
+        $this->present($ads,'');
     }
 
     /**

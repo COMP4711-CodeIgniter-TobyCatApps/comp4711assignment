@@ -42,7 +42,7 @@ class Images extends MY_Model
         $nullImageRecord = $this->create();
         $nullImageRecord->ID   = 0;
         $nullImageRecord->alt  = 'no image';
-        $nullImageRecord->src  = 'assets/img/default-image.png';
+        $nullImageRecord->src  = 'assets/img/default-post-image.png';
         $nullImageRecord->adID = 0;
         return $nullImageRecord;
     }

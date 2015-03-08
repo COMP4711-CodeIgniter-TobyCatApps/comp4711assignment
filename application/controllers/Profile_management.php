@@ -67,21 +67,29 @@ class Profile_Management extends Application {
 
     public function confirm()
     {
-        // make a directory for the uploaded file(s)
-        mkdir('./uploads/users/'.$this->users->get_current_user_id());
+        $currentUserId = $this->users->get_current_user_id();
 
         // load the upload library, and configure it
-        $config['upload_path']   =
-            './uploads/users/'.$this->users->get_current_user_id();
+        $config['upload_path']   = './uploads/users/'.$currentUserId;
         $config['allowed_types'] = 'gif|jpg|png';
         $config['max_size']      = 100;
-
         $this->load->library('upload');
         $this->upload->initialize($config);
 
+        // make a directory for the uploaded file(s)
+        mkdir($config['upload_path']);
+
         // do the uploading
-        echo $this->upload->do_multi_upload('imagefile') ? 'uploaded' : 'failed up upload';
+        $this->upload->do_multi_upload('imagefile');
         echo $this->upload->display_errors();
+
+        // set the user's image in our database
+        $uploadDetails = $this->upload->get_multi_upload_data();
+        if(count($uploadDetails) > 0)
+        {
+            $uploadDetails = $uploadDetails[0];
+            $this->users->setUserImage($currentUserId,$uploadDetails['file_name']);
+        }
 
         redirect('/User_detail');
     }

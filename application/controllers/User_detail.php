@@ -60,6 +60,7 @@ class User_detail extends Application {
         $this->data['username'] = $record->username;
         $this->data['displayname'] = $record->displayname;
         $this->data['email'] = $record->email;
+        $this->data['imagesrc'] = $this->users->getUserImageSrc($id);
     }
 
     public function confirm()

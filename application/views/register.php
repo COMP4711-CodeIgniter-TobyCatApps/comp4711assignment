@@ -1,7 +1,8 @@
 <div class="container">
     <h2>Register</h2>
     <div class="errors">{message}</div>
-    <form action="/register/confirm" method="post">
+    <form enctype="multipart/form-data" action="/register/confirm" method="post">
+        {fimage}
         {fdisplayname}
         {fusername}
         {fpassword}

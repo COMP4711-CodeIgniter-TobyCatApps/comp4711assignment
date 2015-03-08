@@ -5,6 +5,10 @@ class Users extends MY_Model
     public function __construct()
     {
         parent::__construct('users','ID');
+        $this->load->helper('file');
+
+        $this->DEFAULT_IMAGE_PATH   = 'assets/img/default-profile-image.png';
+        $this->ROOT_USER_IMAGE_PATH = 'uploads/users/';
     }
 
     /**
@@ -48,5 +52,26 @@ class Users extends MY_Model
     {
         $currUser = $this->get($this->get_current_user_id());
         return ($currUser != null && $currUser->type == 1);
+    }
+
+    public function setUserImage($userId,$imageFileName)
+    {
+        // get the user from the database
+        $user = $this->get($userId);
+
+        // delete the previous image
+        unlink('./uploads/users/'.$userId.'/'.$user->imageFileName);
+
+        // associate the new image with the user
+        $user->imageFileName = $imageFileName;
+        $this->update($user);
+    }
+
+    public function getUserImageSrc($userId)
+    {
+        $user = $this->get($userId);
+        return ($user->imageFileName) ?
+            $this->ROOT_USER_IMAGE_PATH.$user->ID.'/'.$user->imageFileName :
+            $this->DEFAULT_IMAGE_PATH;
     }
 }
