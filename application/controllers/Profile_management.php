@@ -26,13 +26,20 @@ class Profile_Management extends Application {
         }
     }
 
-    public function _renderForm($id)
+    public function present($id)
     {
         $user = $this->users->get($id);
 
-        $this->data['page_title'] = 'Manage Profile';
-        $this->data['page_body'] = 'profile_management';
-        $this->data['navbar_activelink'] = base_url('/Profile_management');
+        // format any errors
+        $message = '';
+
+        if(count($this->errors) > 0)
+        {
+            foreach($this->errors as $error)
+                $message .= $error . BR;
+        }
+
+        $this->data['message'] = $message;
 
         // Create form fields
         $this->data['fimage'] = makeUploadImageField('Profile picture:', 'imagefile[]', false);
@@ -43,6 +50,10 @@ class Profile_Management extends Application {
         $this->data['femail'] = makeTextField('Email:', 'email', $user->email);
         $this->data['fsubmit'] = makeSubmitButton('Submit', 'Submit');
         $this->data['fcancel'] = makeCancelButton('Cancel');
+
+        $this->data['page_title'] = 'Manage Profile';
+        $this->data['page_body'] = 'profile_management';
+        $this->data['navbar_activelink'] = base_url('/Profile_management');
 
         $this->render();
     }
@@ -56,7 +67,7 @@ class Profile_Management extends Application {
         if($isAdmin || $currentUserId == $id)
         {
             // show them the page
-            $this->_renderForm($id);
+            $this->present($id);
         }
         else
         {
@@ -67,7 +78,50 @@ class Profile_Management extends Application {
 
     public function confirm()
     {
+        // create a record to add to the database
+        $addRecord = $this->users->create();
         $currentUserId = $this->users->getCurrentUserId();
+
+        // get input from form
+        $addRecord->password = $this->input->post('npswd');
+        $addRecord->email = $this->input->post('email');
+        $addRecord->displayname = $this->input->post('name');
+        $pswdConfirmation = $this->input->post('cpswd');
+        $pswdOld = $this->input->post('opswd');
+
+        // validate form before updating
+        if(empty($pswdOld))
+            $this->errors[] = 'Enter current password';
+        elseif(!$this->users->validatePassword($pswdOld))
+            $this->errors[] = 'Old password does not match existing password.';
+        if(strcmp($pswdConfirmation, $addRecord->password) !== 0)
+            $this->errors[] = 'Confirm new password.';
+        if(empty($addRecord->email))
+            $this->errors[] = 'Email address cannot be empty.';
+        if (!filter_var($addRecord->email, FILTER_VALIDATE_EMAIL))
+            $this->errors[] = "Invalid email format.";
+        if(empty($addRecord->displayname))
+            $this->errors[] = 'Display name cannot be empty.';
+
+        // redisplay if any errors
+        if(count($this->errors) > 0)
+        {
+            $this->present($currentUserId);
+            return; // make sure we don't try to save anything
+        }
+
+        // update database
+        $profile = $this->users->some('ID', $currentUserId);
+        $addRecord->ID = $currentUserId;
+        $addRecord->username = $profile[0]->username;
+        $addRecord->type = $profile[0]->type;
+        if(empty($addRecord->password) && empty($pswdConfirmation))
+        {
+            $addRecord->password = $profile[0]->password;
+        }
+        var_dump($profile);
+        var_dump($addRecord);
+        $this->users->update($addRecord);
 
         // load the upload library, and configure it
         $config['upload_path']   = './uploads/users/'.$currentUserId;

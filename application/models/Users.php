@@ -58,6 +58,21 @@ class Users extends MY_Model
         return $this->get($this->getCurrentUserId());
     }
 
+    /**
+     * validates user password
+     *
+     * @return boolean
+     */
+    public function validatePassword($password)
+    {
+        $record = $this->get($this->getCurrentUserId());
+
+        if(strcmp($record->password, $password) == 0)
+            return true;
+        else
+            return false;
+    }
+
     public function checkUsernameAvailability($username)
     {
         return (count($this->some('username',$username)) == 0);

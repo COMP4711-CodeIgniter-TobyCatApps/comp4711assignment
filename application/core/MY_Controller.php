@@ -23,11 +23,11 @@ class Application extends CI_Controller {
             $this->choices['Profile Management'] = base_url('/Profile_management');
             $this->choices['User Details']       = base_url('/User_detail');
             $this->choices['Create Ad']          = base_url('/Create_ad');
-            $this->choices['Manage Ads']          = base_url('/Manage_ads');
+            $this->choices['Manage Ads']         = base_url('/Manage_ads');
         }
         if($this->users->isCurrentUserAdmin())
         {
-            $this->choices['Admin Page']     = base_url('/Admin');
+            $this->choices['Admin Page']         = base_url('/Admin');
         }
 
         // default placeholder values for _template view

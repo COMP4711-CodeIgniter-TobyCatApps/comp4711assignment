@@ -16,8 +16,9 @@ class Manage_ads extends Application
 
     public function index()
     {
-        $this->data['page_title'] = '';
-        $this->data['page_body'] = 'manage_ads.php';
+        $this->data['page_title']        = '';
+        $this->data['page_body']         = 'manage_ads.php';
+        $this->data['navbar_activelink'] = base_url('/Manage_ads');
 
         //Create Ad list
         $ads = $this->ads->some('userID',$this->users->getCurrentUserId());
@@ -29,7 +30,7 @@ class Manage_ads extends Application
                 $adData = array();
 
                 $adData['delete']      = anchor(base_url('/Manage_ads/deletead/'.$ad->ID), "Delete", 'title="'.$ad->ID.'"');
-                $adData['edit']        = anchor(base_url('/editAd/'.$ad->ID), "Edit", 'title="'.$ad->ID.'"');
+                $adData['edit']        = anchor(base_url('/Edit_ad/index/'.$ad->ID.'/Manage_ads'), "Edit", 'title="'.$ad->ID.'"');
                 $adData['ID']          = $ad->ID;
                 $adData['userID']      = $ad->userID;
                 $adData['uploaded']    = $ad->uploaded;
